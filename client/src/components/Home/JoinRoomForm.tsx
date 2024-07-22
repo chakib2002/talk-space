@@ -1,49 +1,108 @@
-import React from "react";
+import {
+  Button,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@nextui-org/react";
+import { useFormik } from "formik";
+import React, { type Dispatch, type SetStateAction } from "react";
+import socket from "~/utils/socket";
+import LoadingSpinner from "../common/LoadingSpinner";
+import { useRouter } from "next/navigation";
 
-const JoinRoomForm = () => {
+const JoinRoomForm = ({
+  isOpen,
+  onOpenChange,
+  token,
+}: {
+  isOpen: boolean;
+  onOpenChange: Dispatch<SetStateAction<boolean>>;
+  token: string;
+}) => {
+  const router = useRouter();
+
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+    },
+    onSubmit: (values) => {
+      socket.emit(
+        "join-room",
+        token,
+        (response: { status: "ok" | "not found"; token?: string }) => {
+          if (response.status === "ok") {
+            router.push(`/${response.token}?username=${values.username}`);
+          } else {
+            alert("Room not found");
+            formik.setSubmitting(false);
+            onOpenChange(false);
+          }
+        },
+      );
+    },
+    validate: (values) => {
+      const errors: Record<string, string> = {};
+      if (values.username === "") {
+        errors.username = "Please Enter a Username";
+      }
+      return errors;
+    },
+  });
+
   return (
-    <form
-      action="#"
-      method="POST"
-      className="relative mt-8 rounded-full sm:mt-12"
-    >
-      <div className="relative">
-        <div className="absolute -inset-px rounded-full bg-gradient-to-r from-cyan-500 to-purple-500"></div>
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-6">
-            <svg
-              className="h-5 w-5 text-gray-500"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </div>
-          <input
-            type="email"
-            name=""
-            id=""
-            placeholder="Enter Room Token"
-            className="block w-full rounded-full border border-transparent bg-black py-4 pl-14 pr-6 text-white placeholder-gray-500 focus:border-transparent focus:ring-0 sm:py-5"
-          />
-        </div>
-      </div>
-      <div className="mt-4 flex sm:absolute sm:inset-y-1.5 sm:right-1.5 sm:mt-0">
-        <button
-          type="submit"
-          className="inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-5 text-sm font-semibold uppercase tracking-widest text-black transition-all duration-200 hover:opacity-90 sm:w-auto sm:py-3"
-        >
-          Join Room
-        </button>
-      </div>
-    </form>
+    <>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Join a Chat Room
+              </ModalHeader>
+              <ModalBody>
+                <Input
+                  value={formik.values.username}
+                  onChange={(e) =>
+                    formik.setFieldValue(
+                      "username",
+                      e.target.value.replace(/\s/g, ""),
+                    )
+                  }
+                  labelPlacement="outside"
+                  isInvalid={formik.isValid === true ? false : true}
+                  size="md"
+                  type="text"
+                  label="Username"
+                  variant="bordered"
+                  color={formik.isValid === false ? "danger" : "default"}
+                  placeholder="Enter your username"
+                  errorMessage="Please enter a username"
+                />
+              </ModalBody>
+              <ModalFooter>
+                <Button color="primary" variant="light" onPress={onClose}>
+                  Cancel
+                </Button>
+                <Button
+                  color="primary"
+                  onPress={async () => {
+                    await formik.validateForm().then((errors) => {
+                      if (Object.keys(errors).length === 0) {
+                        formik.handleSubmit();
+                      }
+                    });
+                  }}
+                >
+                  {formik.isSubmitting ? <LoadingSpinner /> : "Join Room"}
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 

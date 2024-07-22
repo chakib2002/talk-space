@@ -1,16 +1,8 @@
-import React, {
-  type Dispatch,
-  type SetStateAction,
-  type ReactNode,
-} from "react";
+import React from "react";
+import CreateRoomForm from "./CreateRoomForm";
 
-const Header = ({
-  children,
-  setOpen,
-}: {
-  children: ReactNode;
-  setOpen: Dispatch<SetStateAction<boolean>>;
-}) => {
+const Header = () => {
+  const [open, setOpen] = React.useState(false);
   return (
     <header className="bg-black py-4 sm:py-6" x-data="{expanded: false}">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -37,7 +29,7 @@ const Header = ({
               Create Chat Room{" "}
             </button>
           </div>
-          {children}
+          <CreateRoomForm isOpen={open} onOpenChange={setOpen} />
         </div>
       </div>
     </header>

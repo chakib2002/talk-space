@@ -30,13 +30,10 @@ const CreateRoomForm = ({
     onSubmit: (values) => {
       socket.emit(
         "create-room",
-        {
-          username: values.username,
-          token: uuidv4(),
-        },
+        uuidv4(),
         (response: { status: "ok"; token: string }) => {
           if (response.status === "ok") {
-            router.push(`/${response.token}`);
+            router.push(`/${response.token}?username=${values.username}`);
           }
         },
       );
