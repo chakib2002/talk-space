@@ -10,16 +10,17 @@ import {
 import { useFormik } from "formik";
 import React, { type Dispatch, type SetStateAction } from "react";
 import socket from "~/utils/socket";
-import { v4 as uuidv4 } from "uuid";
 import LoadingSpinner from "../common/LoadingSpinner";
 import { useRouter } from "next/navigation";
 
-const CreateRoomForm = ({
+const JoinRoomModal = ({
   isOpen,
   onOpenChange,
+  token,
 }: {
   isOpen: boolean;
   onOpenChange: Dispatch<SetStateAction<boolean>>;
+  token: string;
 }) => {
   const router = useRouter();
 
@@ -29,11 +30,15 @@ const CreateRoomForm = ({
     },
     onSubmit: (values) => {
       socket.emit(
-        "create-room",
-        uuidv4(),
-        (response: { status: "ok"; token: string }) => {
+        "join-room",
+        token,
+        (response: { status: "ok" | "not found"; token?: string }) => {
           if (response.status === "ok") {
             router.push(`/${response.token}?username=${values.username}`);
+          } else {
+            alert("Room not found");
+            formik.setSubmitting(false);
+            onOpenChange(false);
           }
         },
       );
@@ -54,7 +59,7 @@ const CreateRoomForm = ({
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Create a chat room
+                Join a Chat Room
               </ModalHeader>
               <ModalBody>
                 <Input
@@ -90,7 +95,7 @@ const CreateRoomForm = ({
                     });
                   }}
                 >
-                  {formik.isSubmitting ? <LoadingSpinner /> : "Create Room"}
+                  {formik.isSubmitting ? <LoadingSpinner /> : "Join Room"}
                 </Button>
               </ModalFooter>
             </>
@@ -101,4 +106,4 @@ const CreateRoomForm = ({
   );
 };
 
-export default CreateRoomForm;
+export default JoinRoomModal;

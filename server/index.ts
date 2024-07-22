@@ -14,7 +14,7 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  socket.on("create-room", (token, callback) => {
+  socket.on("create-room", (token: string, callback) => {
     socket.join(token);
     callback({
       status: "ok",
@@ -22,7 +22,7 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("join-room", (token, callback) => {
+  socket.on("join-room", (token: string, callback) => {
     const roomExists = io.sockets.adapter.rooms.has(token);
     if (roomExists) {
       socket.join(token);
@@ -38,13 +38,20 @@ io.on("connection", (socket) => {
   });
 
   socket.on("message", (data: messageT, callback) => {
-    socket.to(data.token).emit("message", {
-      username: data.username,
-      message: data.message,
-    });
-    callback({
-      status: "ok",
-    });
+    const roomExists = io.sockets.adapter.rooms.has(data.token);
+    if (roomExists) {
+      socket.to(data.token).emit("message", {
+        username: data.username,
+        message: data.message,
+      });
+      callback({
+        status: "ok",
+      });
+    } else {
+      callback({
+        status: "not found",
+      });
+    }
   });
 
   socket.on("disconnect", () => {
