@@ -1,14 +1,19 @@
 "use client";
-
-import { usePathname } from "next/navigation";
 import React from "react";
-import getToken from "~/hooks/getToken";
+import ChatInput from "~/components/room/ChatInput";
+import SendButton from "../../components/room/SendButton";
+import Header from "~/components/room/Header";
+import HeaderLayout from "~/components/room/HeaderLayout";
 
 const Room = () => {
-  const token = getToken(usePathname());
   return (
-    <div className="flex h-screen w-screen items-center justify-center">
-      {token}
+    <div className="">
+      <HeaderLayout>
+        <Header />
+      </HeaderLayout>
+      <ChatInput>
+        <SendButton />
+      </ChatInput>
     </div>
   );
 };

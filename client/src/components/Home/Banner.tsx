@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import JoinRoomModal from "./JoinRoomModal";
-import TokenInput from "./TokenInput";
-import BannerImage from "./BannerImage";
 import BannerText from "./BannerText";
+import TokenInput from "./TokenInput";
+import JoinRoomModal from "./JoinRoomModal";
+import BannerImage from "./BannerImage";
 
 const Banner = () => {
   const [token, setToken] = useState<string>("");

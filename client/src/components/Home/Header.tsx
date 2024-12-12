@@ -1,6 +1,6 @@
 import React from "react";
-import CreateRoomModal from "./CreateRoomModal";
 import { Image } from "@nextui-org/react";
+import CreateRoomModal from "./CreateRoomModal";
 
 const Header = () => {
   const [open, setOpen] = React.useState(false);
@@ -9,12 +9,13 @@ const Header = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           <div className="shrink-0">
-            <a href="#" title="" className="flex">
-              <Image
-                className="h-9 w-auto"
-                src="https://landingfoliocom.imgix.net/store/collection/dusk/images/logo.svg"
-                alt=""
-              />
+            <a
+              href="/"
+              title=""
+              className="flex items-center gap-2 transition duration-300 ease-out active:scale-95"
+            >
+              <Image className="h-9 w-auto" src="/logo.png" alt="" />
+              <h1 className="text-2xl font-bold italic">Talk Space</h1>
             </a>
           </div>
 
